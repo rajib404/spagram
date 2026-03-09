@@ -7,5 +7,35 @@ services:
       - "3001:3000"
     env_file:
       - .env.production
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      spagram-db:
+        condition: service_healthy
+    networks:
+      - spagram-internal
+
+  spagram-db:
+    image: postgres:16-alpine
+    container_name: spagram-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: spagram
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: spagram
+    volumes:
+      - spagram-pgdata:/var/lib/postgresql/data
+    networks:
+      - spagram-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spagram -d spagram"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  spagram-pgdata:
+    driver: local
+
+networks:
+  spagram-internal:
+    driver: bridge
+    internal: true
