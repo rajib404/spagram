@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -34,7 +34,20 @@ function LoginForm() {
       return;
     }
 
-    router.push(callbackUrl);
+    // Role-based redirect when no explicit callbackUrl was set
+    if (callbackUrl === "/") {
+      const session = await getSession();
+      const role = session?.user?.role;
+      if (role === "THERAPIST") {
+        router.push("/therapist");
+      } else if (role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/user");
+      }
+    } else {
+      router.push(callbackUrl);
+    }
     router.refresh();
   }
 

@@ -90,7 +90,7 @@ export default function RegisterPage() {
       if (data.role === "THERAPIST") {
         router.push("/therapist/profile/setup");
       } else {
-        router.push("/user/dashboard");
+        router.push("/user");
       }
       router.refresh();
     } catch {
