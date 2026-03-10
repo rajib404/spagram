@@ -12,6 +12,7 @@ services:
         condition: service_healthy
     networks:
       - spagram-internal
+      - spagram-external
 
   spagram-db:
     image: postgres:16-alpine
@@ -56,3 +57,5 @@ networks:
   spagram-internal:
     driver: bridge
     internal: true
+  spagram-external:
+    driver: bridge
