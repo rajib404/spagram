@@ -31,6 +31,23 @@ services:
       timeout: 5s
       retries: 5
 
+  # One-off migration runner — uses builder stage which has all Prisma engines pre-downloaded
+  migrate:
+    build:
+      context: .
+      target: builder
+    container_name: spagram-migrate
+    environment:
+      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@spagram-db:5432/spagram?schema=public"
+    command: npx prisma migrate deploy
+    depends_on:
+      spagram-db:
+        condition: service_healthy
+    networks:
+      - spagram-internal
+    profiles:
+      - tools
+
 volumes:
   spagram-pgdata:
     driver: local
