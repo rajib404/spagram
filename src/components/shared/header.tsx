@@ -47,7 +47,14 @@ export function Header() {
   }, [pathname]);
 
   const dashboardHref =
-    user?.role === "THERAPIST" ? "/therapist/dashboard" : "/user/dashboard";
+    user?.role === "THERAPIST"
+      ? "/therapist"
+      : user?.role === "ADMIN"
+        ? "/admin"
+        : "/user";
+
+  const profileHref =
+    user?.role === "THERAPIST" ? "/therapist/profile" : "/user/settings";
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/80 backdrop-blur-lg">
@@ -112,7 +119,7 @@ export function Header() {
                     Dashboard
                   </Link>
                   <Link
-                    href="/user/profile"
+                    href={profileHref}
                     onClick={() => setDropdownOpen(false)}
                     className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                   >
@@ -185,7 +192,7 @@ export function Header() {
                   Dashboard
                 </Link>
                 <Link
-                  href="/user/profile"
+                  href={profileHref}
                   className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
                 >
                   <User className="h-4 w-4" />

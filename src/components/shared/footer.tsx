@@ -9,7 +9,7 @@ const FOOTER_LINKS = {
   ],
   "For Therapists": [
     { href: "/register", label: "Join as Therapist" },
-    { href: "/therapist/resources", label: "Resources" },
+    { href: "/resources", label: "Resources" },
     { href: "/pricing", label: "Pricing" },
     { href: "/faq", label: "FAQ" },
   ],
