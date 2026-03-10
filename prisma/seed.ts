@@ -2836,7 +2836,7 @@ async function main() {
   // Create platform settings
   await prisma.platformSettings.create({
     data: {
-      bookingFeePercent: new Decimal(10),
+      bookingFeePercent: 10,
       supportedMassageTypes: ALL_MASSAGE_TYPES,
       supportedStates: ["New York", "California", "Nevada"],
     },
