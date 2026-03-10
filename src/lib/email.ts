@@ -230,6 +230,80 @@ function formatServiceType(s: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Email Verification
+// ---------------------------------------------------------------------------
+
+export async function sendVerificationEmail(
+  email: string,
+  firstName: string,
+  token: string
+) {
+  const verifyUrl = `${APP_URL}/verify-email?token=${token}`;
+
+  const body = `
+    ${headerBanner("Verify Your Email", "#4f46e5", "&#9993;")}
+    <tr>
+      <td style="padding:28px 32px 32px;">
+        <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
+          Hi <strong>${escapeHtml(firstName)}</strong>,
+        </p>
+        <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
+          Welcome to Spagram! Please verify your email address to complete your account setup.
+        </p>
+
+        ${ctaButton("Verify Email", verifyUrl)}
+
+        <p style="margin:24px 0 0;font-size:12px;color:#94a3b8;text-align:center;line-height:1.5;">
+          This link expires in 24 hours. If you didn&rsquo;t create an account, you can safely ignore this email.
+        </p>
+      </td>
+    </tr>`;
+
+  await sendEmail({
+    to: email,
+    subject: "Verify your email — Spagram",
+    html: emailLayout(body),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Password Reset
+// ---------------------------------------------------------------------------
+
+export async function sendPasswordResetEmail(
+  email: string,
+  firstName: string,
+  token: string
+) {
+  const resetUrl = `${APP_URL}/reset-password?token=${token}`;
+
+  const body = `
+    ${headerBanner("Reset Your Password", "#4f46e5", "&#128274;")}
+    <tr>
+      <td style="padding:28px 32px 32px;">
+        <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
+          Hi <strong>${escapeHtml(firstName)}</strong>,
+        </p>
+        <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
+          We received a request to reset the password for your Spagram account. Click the button below to set a new password.
+        </p>
+
+        ${ctaButton("Reset Password", resetUrl)}
+
+        <p style="margin:24px 0 0;font-size:12px;color:#94a3b8;text-align:center;line-height:1.5;">
+          This link expires in 1 hour. If you didn&rsquo;t request a password reset, you can safely ignore this email.
+        </p>
+      </td>
+    </tr>`;
+
+  await sendEmail({
+    to: email,
+    subject: "Reset your password — Spagram",
+    html: emailLayout(body),
+  });
+}
+
+// ---------------------------------------------------------------------------
 // 1. Booking Request — to therapist
 // ---------------------------------------------------------------------------
 

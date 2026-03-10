@@ -88,7 +88,7 @@ export default function RegisterPage() {
 
       // Redirect therapists to profile setup, clients to dashboard
       if (data.role === "THERAPIST") {
-        router.push("/therapist/profile/setup");
+        router.push("/therapist/profile");
       } else {
         router.push("/user");
       }

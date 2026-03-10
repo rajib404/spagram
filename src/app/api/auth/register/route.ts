@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { Role } from "@prisma/client";
 import { registerSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -75,6 +77,19 @@ export async function POST(req: Request) {
       });
       therapistProfileId = profile.id;
     }
+
+    // Send verification email (non-blocking)
+    const verificationToken = randomUUID();
+    await db.verificationToken.create({
+      data: {
+        identifier: `verify:${email.toLowerCase()}`,
+        token: verificationToken,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
+    });
+    sendVerificationEmail(email.toLowerCase(), firstName, verificationToken).catch(
+      (err) => logger.error("Failed to send verification email:", { error: err instanceof Error ? err.message : String(err) })
+    );
 
     return NextResponse.json(
       {

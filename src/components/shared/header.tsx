@@ -140,6 +140,12 @@ export function Header() {
           ) : (
             <>
               <Link
+                href="/register?role=therapist"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+              >
+                Join as Therapist
+              </Link>
+              <Link
                 href="/login"
                 className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
               >
@@ -208,6 +214,12 @@ export function Header() {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
+                <Link
+                  href="/register?role=therapist"
+                  className="block rounded-lg px-3 py-2.5 text-center text-sm font-medium text-neutral-600 hover:bg-neutral-100"
+                >
+                  Join as Therapist
+                </Link>
                 <Link
                   href="/login"
                   className="btn-secondary w-full justify-center"
