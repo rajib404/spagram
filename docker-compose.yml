@@ -49,6 +49,23 @@ services:
     profiles:
       - tools
 
+  # One-off seed runner
+  seed:
+    build:
+      context: .
+      target: builder
+    container_name: spagram-seed
+    environment:
+      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@spagram-db:5432/spagram?schema=public"
+    command: npx prisma db seed
+    depends_on:
+      spagram-db:
+        condition: service_healthy
+    networks:
+      - spagram-internal
+    profiles:
+      - tools
+
 volumes:
   spagram-pgdata:
     driver: local
