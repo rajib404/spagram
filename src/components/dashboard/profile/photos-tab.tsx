@@ -3,8 +3,21 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { uploadFiles } from "@/lib/uploadthing";
 import type { ProfileData } from "@/app/(dashboard)/therapist/profile/page";
+
+async function uploadToLocal(files: File[]): Promise<string[]> {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("file", file);
+  }
+  const res = await fetch("/api/upload", { method: "POST", body: formData });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Upload failed");
+  }
+  const data = await res.json();
+  return data.urls;
+}
 
 interface Props {
   profile: ProfileData;
@@ -32,8 +45,8 @@ export function PhotosTab({ profile, onSave }: Props) {
 
     setUploading(true);
     try {
-      const res = await uploadFiles("profilePhoto", { files: [file] });
-      const url = res[0]?.ufsUrl || res[0]?.url;
+      const urls = await uploadToLocal([file]);
+      const url = urls[0];
       if (url) {
         setProfilePhoto(url);
         toast.success("Profile photo updated. Click Save to confirm.");
@@ -69,8 +82,7 @@ export function PhotosTab({ profile, onSave }: Props) {
 
     setUploading(true);
     try {
-      const res = await uploadFiles("galleryPhotos", { files: validFiles });
-      const urls = res.map((r) => r.ufsUrl || r.url).filter(Boolean);
+      const urls = await uploadToLocal(validFiles);
       if (urls.length > 0) {
         setGalleryPhotos((prev) => [...prev, ...urls]);
         toast.success(`${urls.length} photo${urls.length !== 1 ? "s" : ""} added. Click Save to confirm.`);

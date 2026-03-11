@@ -10,6 +10,8 @@ services:
     depends_on:
       spagram-db:
         condition: service_healthy
+    volumes:
+      - spagram-uploads:/app/public/uploads
     networks:
       - spagram-internal
       - spagram-external
@@ -68,6 +70,8 @@ services:
 
 volumes:
   spagram-pgdata:
+    driver: local
+  spagram-uploads:
     driver: local
 
 networks:
