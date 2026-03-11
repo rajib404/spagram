@@ -36,15 +36,17 @@ export function PhotosTab({ profile, onSave }: Props) {
     setUploading(true);
     try {
       const res = await startProfileUpload([file]);
-      const url = res?.[0]?.ufsUrl;
+      const url = res?.[0]?.ufsUrl || res?.[0]?.url;
       if (url) {
         setProfilePhoto(url);
         toast.success("Profile photo updated. Click Save to confirm.");
       } else {
+        console.error("Upload response:", JSON.stringify(res, null, 2));
         toast.error("Upload failed — no URL returned");
       }
-    } catch {
-      toast.error("Failed to upload photo");
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to upload photo");
     }
     setUploading(false);
   }
@@ -72,15 +74,17 @@ export function PhotosTab({ profile, onSave }: Props) {
     setUploading(true);
     try {
       const res = await startGalleryUpload(validFiles);
-      const urls = (res || []).map((r) => r.ufsUrl).filter(Boolean);
+      const urls = (res || []).map((r) => r.ufsUrl || r.url).filter(Boolean);
       if (urls.length > 0) {
         setGalleryPhotos((prev) => [...prev, ...urls]);
         toast.success(`${urls.length} photo${urls.length !== 1 ? "s" : ""} added. Click Save to confirm.`);
       } else {
+        console.error("Gallery upload response:", JSON.stringify(res, null, 2));
         toast.error("Upload failed — no URLs returned");
       }
-    } catch {
-      toast.error("Failed to upload photos");
+    } catch (err) {
+      console.error("Gallery upload error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to upload photos");
     }
     setUploading(false);
     if (galleryInputRef.current) galleryInputRef.current.value = "";
