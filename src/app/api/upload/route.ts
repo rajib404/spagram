@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const urls: string[] = [];
 
     for (const entry of files) {
-      if (!(entry instanceof File)) {
+      if (!(entry instanceof Blob)) {
         return NextResponse.json({ error: "Invalid file" }, { status: 400 });
       }
 
@@ -40,12 +40,13 @@ export async function POST(req: NextRequest) {
 
       if (entry.size > MAX_FILE_SIZE) {
         return NextResponse.json(
-          { error: `File ${entry.name} exceeds 4MB limit` },
+          { error: "File exceeds 4MB limit" },
           { status: 400 }
         );
       }
 
-      const ext = entry.name.split(".").pop()?.toLowerCase() || "jpg";
+      const mime = entry.type.split("/")[1] || "jpg";
+      const ext = mime === "jpeg" ? "jpg" : mime;
       const filename = `${randomUUID()}.${ext}`;
       const buffer = Buffer.from(await entry.arrayBuffer());
 
