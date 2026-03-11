@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     description:
       "Discover and book licensed massage therapists near you.",
   },
+  icons: {
+    icon: "/icon.svg",
+  },
   robots: {
     index: true,
     follow: true,

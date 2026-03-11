@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useUploadThing } from "@/lib/uploadthing";
 import type { ProfileData } from "@/app/(dashboard)/therapist/profile/page";
 
 interface Props {
@@ -20,28 +21,8 @@ export function PhotosTab({ profile, onSave }: Props) {
   const profileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  async function uploadFile(file: File): Promise<string | null> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/uploadthing?actionType=upload&slug=profilePhoto", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        // Fallback: use object URL for preview (in dev without uploadthing configured)
-        return URL.createObjectURL(file);
-      }
-
-      const data = await res.json();
-      return data.url || URL.createObjectURL(file);
-    } catch {
-      // Fallback to object URL for development
-      return URL.createObjectURL(file);
-    }
-  }
+  const { startUpload: startProfileUpload } = useUploadThing("profilePhoto");
+  const { startUpload: startGalleryUpload } = useUploadThing("galleryPhotos");
 
   async function handleProfilePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -53,10 +34,17 @@ export function PhotosTab({ profile, onSave }: Props) {
     }
 
     setUploading(true);
-    const url = await uploadFile(file);
-    if (url) {
-      setProfilePhoto(url);
-      toast.success("Profile photo updated. Click Save to confirm.");
+    try {
+      const res = await startProfileUpload([file]);
+      const url = res?.[0]?.ufsUrl;
+      if (url) {
+        setProfilePhoto(url);
+        toast.success("Profile photo updated. Click Save to confirm.");
+      } else {
+        toast.error("Upload failed — no URL returned");
+      }
+    } catch {
+      toast.error("Failed to upload photo");
     }
     setUploading(false);
   }
@@ -71,21 +59,28 @@ export function PhotosTab({ profile, onSave }: Props) {
       return;
     }
 
-    setUploading(true);
-    const urls: string[] = [];
-
-    for (const file of files) {
+    const validFiles = files.filter((file) => {
       if (file.size > 4 * 1024 * 1024) {
         toast.error(`${file.name} exceeds 4MB limit`);
-        continue;
+        return false;
       }
-      const url = await uploadFile(file);
-      if (url) urls.push(url);
-    }
+      return true;
+    });
 
-    if (urls.length > 0) {
-      setGalleryPhotos((prev) => [...prev, ...urls]);
-      toast.success(`${urls.length} photo${urls.length !== 1 ? "s" : ""} added. Click Save to confirm.`);
+    if (validFiles.length === 0) return;
+
+    setUploading(true);
+    try {
+      const res = await startGalleryUpload(validFiles);
+      const urls = (res || []).map((r) => r.ufsUrl).filter(Boolean);
+      if (urls.length > 0) {
+        setGalleryPhotos((prev) => [...prev, ...urls]);
+        toast.success(`${urls.length} photo${urls.length !== 1 ? "s" : ""} added. Click Save to confirm.`);
+      } else {
+        toast.error("Upload failed — no URLs returned");
+      }
+    } catch {
+      toast.error("Failed to upload photos");
     }
     setUploading(false);
     if (galleryInputRef.current) galleryInputRef.current.value = "";
