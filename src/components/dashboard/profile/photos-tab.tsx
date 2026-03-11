@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useUploadThing } from "@/lib/uploadthing";
+import { uploadFiles } from "@/lib/uploadthing";
 import type { ProfileData } from "@/app/(dashboard)/therapist/profile/page";
 
 interface Props {
@@ -21,9 +21,6 @@ export function PhotosTab({ profile, onSave }: Props) {
   const profileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const { startUpload: startProfileUpload } = useUploadThing("profilePhoto");
-  const { startUpload: startGalleryUpload } = useUploadThing("galleryPhotos");
-
   async function handleProfilePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -35,13 +32,12 @@ export function PhotosTab({ profile, onSave }: Props) {
 
     setUploading(true);
     try {
-      const res = await startProfileUpload([file]);
-      const url = res?.[0]?.ufsUrl || res?.[0]?.url;
+      const res = await uploadFiles("profilePhoto", { files: [file] });
+      const url = res[0]?.ufsUrl || res[0]?.url;
       if (url) {
         setProfilePhoto(url);
         toast.success("Profile photo updated. Click Save to confirm.");
       } else {
-        console.error("Upload response:", JSON.stringify(res, null, 2));
         toast.error("Upload failed — no URL returned");
       }
     } catch (err) {
@@ -73,13 +69,12 @@ export function PhotosTab({ profile, onSave }: Props) {
 
     setUploading(true);
     try {
-      const res = await startGalleryUpload(validFiles);
-      const urls = (res || []).map((r) => r.ufsUrl || r.url).filter(Boolean);
+      const res = await uploadFiles("galleryPhotos", { files: validFiles });
+      const urls = res.map((r) => r.ufsUrl || r.url).filter(Boolean);
       if (urls.length > 0) {
         setGalleryPhotos((prev) => [...prev, ...urls]);
         toast.success(`${urls.length} photo${urls.length !== 1 ? "s" : ""} added. Click Save to confirm.`);
       } else {
-        console.error("Gallery upload response:", JSON.stringify(res, null, 2));
         toast.error("Upload failed — no URLs returned");
       }
     } catch (err) {
