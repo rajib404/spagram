@@ -1,23 +1,10 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-let transporter: nodemailer.Transporter | null = null;
-
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true", // true for 465, false for 587
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-  }
-  return transporter;
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
 }
 
-const FROM_EMAIL = process.env.SMTP_FROM || "Spagram <noreply@spagram.com>";
+const FROM_EMAIL = process.env.FROM_EMAIL || "Spagram <noreply@uhxa.com>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 interface BookingEmailData {
@@ -49,7 +36,7 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
-  return getTransporter().sendMail({ from: FROM_EMAIL, to, subject, html });
+  return getResend().emails.send({ from: FROM_EMAIL, to, subject, html });
 }
 
 // ---------------------------------------------------------------------------
