@@ -12,8 +12,12 @@ async function uploadToLocal(files: File[]): Promise<string[]> {
   }
   const res = await fetch("/api/upload", { method: "POST", body: formData });
   if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.error || "Upload failed");
+    let message = `Upload failed (${res.status})`;
+    try {
+      const data = await res.json();
+      if (data.error) message = data.error;
+    } catch { /* non-JSON response */ }
+    throw new Error(message);
   }
   const data = await res.json();
   return data.urls;
