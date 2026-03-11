@@ -6,7 +6,7 @@ import { join } from "path";
 import { randomUUID } from "crypto";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
-const UPLOAD_DIR = join(process.cwd(), "public", "uploads");
+const UPLOAD_DIR = join(process.cwd(), "uploads");
 
 export async function POST(req: NextRequest) {
   try {
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       const buffer = Buffer.from(await entry.arrayBuffer());
 
       await writeFile(join(UPLOAD_DIR, filename), buffer);
-      urls.push(`/uploads/${filename}`);
+      urls.push(`/api/uploads/${filename}`);
     }
 
     return NextResponse.json({ urls });

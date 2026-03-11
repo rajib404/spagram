@@ -11,7 +11,7 @@ services:
       spagram-db:
         condition: service_healthy
     volumes:
-      - spagram-uploads:/app/public/uploads
+      - spagram-uploads:/app/uploads
     networks:
       - spagram-internal
       - spagram-external
