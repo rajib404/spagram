@@ -56,7 +56,7 @@ function LoginForm() {
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-neutral-900">Welcome back</h1>
         <p className="mt-2 text-sm text-neutral-500">
-          Sign in to your Spagram account
+          Sign in to your Sparina account
         </p>
       </div>
 

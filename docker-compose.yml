@@ -1,35 +1,35 @@
 services:
   app:
     build: .
-    container_name: spagram-app
+    container_name: sparina-app
     restart: unless-stopped
     ports:
       - "3001:3000"
     env_file:
       - .env.production
     depends_on:
-      spagram-db:
+      sparina-db:
         condition: service_healthy
     volumes:
-      - spagram-uploads:/app/uploads
+      - sparina-uploads:/app/uploads
     networks:
-      - spagram-internal
-      - spagram-external
+      - sparina-internal
+      - sparina-external
 
-  spagram-db:
+  sparina-db:
     image: postgres:16-alpine
-    container_name: spagram-db
+    container_name: sparina-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: spagram
+      POSTGRES_USER: sparina
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: spagram
+      POSTGRES_DB: sparina
     volumes:
-      - spagram-pgdata:/var/lib/postgresql/data
+      - sparina-pgdata:/var/lib/postgresql/data
     networks:
-      - spagram-internal
+      - sparina-internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U spagram -d spagram"]
+      test: ["CMD-SHELL", "pg_isready -U sparina -d sparina"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,15 +39,15 @@ services:
     build:
       context: .
       target: builder
-    container_name: spagram-migrate
+    container_name: sparina-migrate
     environment:
-      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@spagram-db:5432/spagram?schema=public"
+      DATABASE_URL: "postgresql://sparina:${DB_PASSWORD}@sparina-db:5432/sparina?schema=public"
     command: npx prisma migrate deploy
     depends_on:
-      spagram-db:
+      sparina-db:
         condition: service_healthy
     networks:
-      - spagram-internal
+      - sparina-internal
     profiles:
       - tools
 
@@ -56,27 +56,27 @@ services:
     build:
       context: .
       target: builder
-    container_name: spagram-seed
+    container_name: sparina-seed
     environment:
-      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@spagram-db:5432/spagram?schema=public"
+      DATABASE_URL: "postgresql://sparina:${DB_PASSWORD}@sparina-db:5432/sparina?schema=public"
     command: npx prisma db seed
     depends_on:
-      spagram-db:
+      sparina-db:
         condition: service_healthy
     networks:
-      - spagram-internal
+      - sparina-internal
     profiles:
       - tools
 
 volumes:
-  spagram-pgdata:
+  sparina-pgdata:
     driver: local
-  spagram-uploads:
+  sparina-uploads:
     driver: local
 
 networks:
-  spagram-internal:
+  sparina-internal:
     driver: bridge
     internal: true
-  spagram-external:
+  sparina-external:
     driver: bridge

@@ -27,7 +27,7 @@ interface PageProps {
   params: { slug: string };
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://spagram.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://sparina.com";
 
 async function getTherapist(slug: string) {
   const profile = await db.therapistProfile.findUnique({

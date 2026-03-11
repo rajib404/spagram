@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Careers | Spagram",
+  title: "Careers | Sparina",
 };
 
 export default function CareersPage() {
@@ -20,7 +20,7 @@ export default function CareersPage() {
             We don&apos;t have any openings at the moment, but feel free to
             reach out at{" "}
             <span className="font-medium text-neutral-700">
-              careers@spagram.com
+              careers@sparina.com
             </span>{" "}
             and we&apos;ll keep your information on file.
           </p>

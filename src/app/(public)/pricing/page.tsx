@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Pricing | Spagram",
+  title: "Pricing | Sparina",
 };
 
 export default function PricingPage() {
@@ -10,8 +10,8 @@ export default function PricingPage() {
       <h1 className="text-3xl font-bold text-neutral-900">Pricing</h1>
       <div className="mt-8 space-y-6 text-neutral-600 leading-relaxed">
         <p>
-          Spagram is free for clients. Therapists set their own session prices
-          and Spagram takes a small platform fee on each completed booking.
+          Sparina is free for clients. Therapists set their own session prices
+          and Sparina takes a small platform fee on each completed booking.
         </p>
 
         <div className="grid gap-6 sm:grid-cols-2">

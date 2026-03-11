@@ -8,27 +8,27 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://spagram.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://sparina.com";
 
 export const metadata: Metadata = {
   title: {
-    default: "Spagram — Find & Book Massage Therapists",
-    template: "%s — Spagram",
+    default: "Sparina — Find & Book Massage Therapists",
+    template: "%s — Sparina",
   },
   description:
-    "Discover and book licensed massage therapists near you. Browse profiles, read reviews, and schedule sessions instantly on Spagram.",
+    "Discover and book licensed massage therapists near you. Browse profiles, read reviews, and schedule sessions instantly on Sparina.",
   metadataBase: new URL(APP_URL),
   openGraph: {
     type: "website",
-    siteName: "Spagram",
-    title: "Spagram — Find & Book Massage Therapists",
+    siteName: "Sparina",
+    title: "Sparina — Find & Book Massage Therapists",
     description:
       "Discover and book licensed massage therapists near you. Browse profiles, read reviews, and schedule sessions instantly.",
     url: APP_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Spagram — Find & Book Massage Therapists",
+    title: "Sparina — Find & Book Massage Therapists",
     description:
       "Discover and book licensed massage therapists near you.",
   },

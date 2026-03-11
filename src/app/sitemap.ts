@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://spagram.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://sparina.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let therapists: { slug: string; updatedAt: Date }[] = [];

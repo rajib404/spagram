@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy | Spagram",
+  title: "Privacy Policy | Sparina",
 };
 
 export default function PrivacyPage() {
@@ -70,7 +70,7 @@ export default function PrivacyPage() {
           <p className="mt-2">
             You may access, update, or delete your personal information through
             your account settings. To request a full data export or account
-            deletion, contact us at support@spagram.com.
+            deletion, contact us at support@sparina.com.
           </p>
         </section>
 

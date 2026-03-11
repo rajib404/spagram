@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms of Service | Spagram",
+  title: "Terms of Service | Sparina",
 };
 
 export default function TermsPage() {
@@ -13,7 +13,7 @@ export default function TermsPage() {
             1. Acceptance of Terms
           </h2>
           <p className="mt-2">
-            By accessing or using Spagram, you agree to be bound by these Terms
+            By accessing or using Sparina, you agree to be bound by these Terms
             of Service. If you do not agree to these terms, please do not use
             our platform.
           </p>
@@ -24,7 +24,7 @@ export default function TermsPage() {
             2. Description of Service
           </h2>
           <p className="mt-2">
-            Spagram is an online platform that connects clients with massage
+            Sparina is an online platform that connects clients with massage
             therapists. We facilitate the booking and payment process but are not
             a party to the service agreement between clients and therapists.
           </p>
@@ -58,7 +58,7 @@ export default function TermsPage() {
             5. Prohibited Conduct
           </h2>
           <p className="mt-2">
-            You may not use Spagram for any unlawful purpose, to harass or
+            You may not use Sparina for any unlawful purpose, to harass or
             abuse other users, to post false or misleading information, or to
             attempt to gain unauthorized access to our systems.
           </p>
@@ -69,7 +69,7 @@ export default function TermsPage() {
             6. Limitation of Liability
           </h2>
           <p className="mt-2">
-            Spagram acts as an intermediary platform and is not liable for the
+            Sparina acts as an intermediary platform and is not liable for the
             quality, safety, or legality of services provided by therapists. Use
             the platform at your own discretion.
           </p>

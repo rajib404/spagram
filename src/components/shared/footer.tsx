@@ -29,7 +29,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block">
               <span className="text-xl font-bold tracking-tight text-white">
-                Spagram
+                Sparina
               </span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-neutral-400">
@@ -73,7 +73,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-neutral-800 pt-8">
           <p className="text-center text-sm text-neutral-500">
-            &copy; {new Date().getFullYear()} Spagram. All rights reserved.
+            &copy; {new Date().getFullYear()} Sparina. All rights reserved.
           </p>
         </div>
       </div>

@@ -15,12 +15,12 @@ export async function POST(req: NextRequest) {
   try {
     const result = await sendEmail({
       to,
-      subject: "Test Email — Spagram",
+      subject: "Test Email — Sparina",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">
-          <h1 style="font-size:20px;color:#4f46e5;">Spagram Test Email</h1>
+          <h1 style="font-size:20px;color:#4f46e5;">Sparina Test Email</h1>
           <p style="color:#334155;line-height:1.6;">
-            This is a test email sent from the Spagram admin panel.
+            This is a test email sent from the Sparina admin panel.
           </p>
           <p style="color:#94a3b8;font-size:13px;">
             Sent at ${new Date().toISOString()}

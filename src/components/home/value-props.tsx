@@ -34,7 +34,7 @@ export function ValueProps() {
         <ScrollAnimate>
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
-              Why choose Spagram
+              Why choose Sparina
             </h2>
             <p className="mt-3 text-lg text-neutral-500">
               We make finding and booking massage therapy simple, safe, and

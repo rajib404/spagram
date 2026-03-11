@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Cookie Policy | Spagram",
+  title: "Cookie Policy | Sparina",
 };
 
 export default function CookiesPage() {

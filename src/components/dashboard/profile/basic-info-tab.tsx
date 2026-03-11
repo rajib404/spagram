@@ -133,7 +133,7 @@ export function BasicInfoTab({ profile, onSave }: Props) {
         </label>
         <div className="flex items-center gap-0">
           <span className="px-3 py-2 bg-neutral-100 border border-r-0 border-neutral-300 rounded-l-lg text-sm text-neutral-500">
-            spagram.com/therapists/
+            sparina.com/therapists/
           </span>
           <input
             {...register("slug")}

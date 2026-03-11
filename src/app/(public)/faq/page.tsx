@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "FAQ | Spagram",
+  title: "FAQ | Sparina",
 };
 
 const FAQS = [
@@ -26,7 +26,7 @@ const FAQS = [
     a: "Yes, many therapists offer both in-call (at their location) and out-call (at your location) sessions. Check the therapist's profile for available options.",
   },
   {
-    q: "How do I become a therapist on Spagram?",
+    q: "How do I become a therapist on Sparina?",
     a: "Register for an account, select 'Offer services', complete your profile setup, and submit for verification. Once approved, you'll start appearing in search results.",
   },
 ];

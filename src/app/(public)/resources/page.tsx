@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Therapist Resources | Spagram",
+  title: "Therapist Resources | Sparina",
 };
 
 export default function ResourcesPage() {
@@ -12,7 +12,7 @@ export default function ResourcesPage() {
       </h1>
       <div className="mt-8 space-y-6 text-neutral-600 leading-relaxed">
         <p>
-          Everything you need to succeed on Spagram. From setting up your
+          Everything you need to succeed on Sparina. From setting up your
           profile to managing bookings, we&apos;ve got you covered.
         </p>
 

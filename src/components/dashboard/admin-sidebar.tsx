@@ -93,7 +93,7 @@ export function AdminSidebar() {
     <>
       {/* Mobile header bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-neutral-900 border-b border-neutral-700 px-4 h-14 flex items-center justify-between">
-        <span className="text-lg font-bold text-white">Spagram Admin</span>
+        <span className="text-lg font-bold text-white">Sparina Admin</span>
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 text-neutral-300 hover:text-white"
@@ -123,7 +123,7 @@ export function AdminSidebar() {
         {/* Logo */}
         <div className="h-16 px-6 flex items-center border-b border-neutral-800">
           <Link href="/admin" className="text-xl font-bold text-white">
-            Spagram <span className="text-xs font-normal text-neutral-400 ml-1">Admin</span>
+            Sparina <span className="text-xs font-normal text-neutral-400 ml-1">Admin</span>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}

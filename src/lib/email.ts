@@ -4,7 +4,7 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || "Spagram <noreply@uhxa.com>";
+const FROM_EMAIL = process.env.FROM_EMAIL || "Sparina <noreply@uhxa.com>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 interface BookingEmailData {
@@ -50,7 +50,7 @@ function emailLayout(body: string) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Spagram</title>
+  <title>Sparina</title>
   <!--[if mso]>
   <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
   <![endif]-->
@@ -66,7 +66,7 @@ function emailLayout(body: string) {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
           <tr>
             <td align="center" style="padding-bottom:24px;">
-              <span style="font-size:28px;font-weight:800;color:#4f46e5;letter-spacing:-0.5px;">Spagram</span>
+              <span style="font-size:28px;font-weight:800;color:#4f46e5;letter-spacing:-0.5px;">Sparina</span>
             </td>
           </tr>
         </table>
@@ -81,7 +81,7 @@ function emailLayout(body: string) {
           <tr>
             <td align="center" style="padding:24px 16px 0;">
               <p style="margin:0 0 8px;font-size:13px;color:#94a3b8;">
-                &copy; ${new Date().getFullYear()} Spagram. All rights reserved.
+                &copy; ${new Date().getFullYear()} Sparina. All rights reserved.
               </p>
               <p style="margin:0;font-size:12px;color:#94a3b8;">
                 <a href="${APP_URL}/settings/notifications" style="color:#94a3b8;text-decoration:underline;">Unsubscribe</a>
@@ -248,7 +248,7 @@ export async function sendVerificationEmail(
           Hi <strong>${escapeHtml(firstName)}</strong>,
         </p>
         <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
-          Welcome to Spagram! Please verify your email address to complete your account setup.
+          Welcome to Sparina! Please verify your email address to complete your account setup.
         </p>
 
         ${ctaButton("Verify Email", verifyUrl)}
@@ -261,7 +261,7 @@ export async function sendVerificationEmail(
 
   await sendEmail({
     to: email,
-    subject: "Verify your email — Spagram",
+    subject: "Verify your email — Sparina",
     html: emailLayout(body),
   });
 }
@@ -285,7 +285,7 @@ export async function sendPasswordResetEmail(
           Hi <strong>${escapeHtml(firstName)}</strong>,
         </p>
         <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">
-          We received a request to reset the password for your Spagram account. Click the button below to set a new password.
+          We received a request to reset the password for your Sparina account. Click the button below to set a new password.
         </p>
 
         ${ctaButton("Reset Password", resetUrl)}
@@ -298,7 +298,7 @@ export async function sendPasswordResetEmail(
 
   await sendEmail({
     to: email,
-    subject: "Reset your password — Spagram",
+    subject: "Reset your password — Sparina",
     html: emailLayout(body),
   });
 }

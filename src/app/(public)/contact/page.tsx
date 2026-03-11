@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Contact | Spagram",
+  title: "Contact | Sparina",
 };
 
 export default function ContactPage() {
@@ -15,7 +15,7 @@ export default function ContactPage() {
         <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-6 space-y-4">
           <div>
             <h2 className="text-sm font-semibold text-neutral-900">Email</h2>
-            <p className="mt-1 text-sm">support@spagram.com</p>
+            <p className="mt-1 text-sm">support@sparina.com</p>
           </div>
           <div>
             <h2 className="text-sm font-semibold text-neutral-900">

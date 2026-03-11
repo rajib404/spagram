@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Blog | Spagram",
+  title: "Blog | Sparina",
 };
 
 export default function BlogPage() {
@@ -8,7 +8,7 @@ export default function BlogPage() {
       <h1 className="text-3xl font-bold text-neutral-900">Blog</h1>
       <div className="mt-8 space-y-6 text-neutral-600 leading-relaxed">
         <p>
-          Tips, guides, and news from the Spagram team about massage therapy,
+          Tips, guides, and news from the Sparina team about massage therapy,
           wellness, and our platform.
         </p>
         <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-6">

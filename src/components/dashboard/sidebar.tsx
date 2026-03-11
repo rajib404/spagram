@@ -93,7 +93,7 @@ export function DashboardSidebar() {
     <>
       {/* Mobile header bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-neutral-200 px-4 h-14 flex items-center justify-between">
-        <span className="text-lg font-bold text-primary-600">Spagram</span>
+        <span className="text-lg font-bold text-primary-600">Sparina</span>
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 text-neutral-600 hover:text-neutral-900"
@@ -123,7 +123,7 @@ export function DashboardSidebar() {
         {/* Logo */}
         <div className="h-16 px-6 flex items-center border-b border-neutral-100">
           <Link href="/" className="text-xl font-bold text-primary-600">
-            Spagram
+            Sparina
           </Link>
           <button
             onClick={() => setMobileOpen(false)}

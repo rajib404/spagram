@@ -115,7 +115,7 @@ function RegisterForm() {
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-neutral-900">Create account</h1>
         <p className="mt-2 text-sm text-neutral-500">
-          Join Spagram to book or offer massage services
+          Join Sparina to book or offer massage services
         </p>
       </div>
 
