@@ -1,4 +1,4 @@
-# Spagram
+# Sparina
 
 A full-stack massage therapy booking platform built with Next.js 14. Clients can browse therapist profiles, book sessions, and leave reviews. Therapists manage their availability, accept/decline bookings, track earnings, and respond to reviews.
 
@@ -9,7 +9,7 @@ A full-stack massage therapy booking platform built with Next.js 14. Clients can
 - **Database**: PostgreSQL + Prisma v5
 - **Auth**: NextAuth.js (credentials + Google OAuth)
 - **Payments**: Stripe (manual-capture PaymentIntents, saved cards, webhooks)
-- **File Uploads**: UploadThing
+- **File Uploads**: Local (served via API route)
 - **Email**: Resend
 - **Styling**: Tailwind CSS
 - **State**: React Query v5
@@ -21,7 +21,7 @@ A full-stack massage therapy booking platform built with Next.js 14. Clients can
 - Node.js 18+
 - PostgreSQL database
 - Stripe account
-- UploadThing account
+
 - Resend account (for transactional email)
 - Google OAuth credentials (optional)
 
