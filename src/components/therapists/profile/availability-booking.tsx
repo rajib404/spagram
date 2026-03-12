@@ -43,7 +43,6 @@ interface AvailabilityBookingProps {
 function CheckoutForm({ bookingId, bookingFee }: { bookingId: string; bookingFee: number }) {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
 
