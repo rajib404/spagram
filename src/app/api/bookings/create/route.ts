@@ -230,6 +230,7 @@ export async function POST(req: NextRequest) {
           therapistProfile: {
             select: {
               displayName: true,
+              incallAddress: true,
               user: { select: { email: true } },
             },
           },

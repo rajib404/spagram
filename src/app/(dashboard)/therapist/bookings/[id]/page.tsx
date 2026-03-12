@@ -14,6 +14,7 @@ interface BookingDetail {
   duration: number;
   serviceType: string;
   locationType: string;
+  outcallAddress: string | null;
   totalPrice: string;
   bookingFee: string;
   status: string;
@@ -136,6 +137,12 @@ export default function TherapistBookingDetailPage({
                 {booking.duration}min &middot; {booking.locationType === "INCALL" ? "Incall" : "Outcall"}
               </span>
             </div>
+            {/* Address */}
+            {booking.locationType === "OUTCALL" && booking.outcallAddress && (
+              <p className="mt-1.5 text-sm text-neutral-500">
+                <span className="font-medium text-neutral-600">Outcall address:</span> {booking.outcallAddress}
+              </p>
+            )}
           </div>
           <div className="text-right flex-shrink-0">
             <p className="font-semibold text-neutral-900">${parseFloat(booking.totalPrice).toFixed(0)}</p>

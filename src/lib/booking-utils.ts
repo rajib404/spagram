@@ -37,6 +37,7 @@ export function buildBookingEmailData(
       therapistProfile: {
         select: {
           displayName: true;
+          incallAddress: true;
           user: { select: { email: true } };
         };
       };
@@ -63,6 +64,7 @@ export function buildBookingEmailData(
     serviceType: booking.serviceType,
     locationType: booking.locationType,
     outcallAddress: booking.outcallAddress,
+    incallAddress: booking.therapistProfile.incallAddress,
     totalPrice: booking.totalPrice.toString(),
     bookingFee: booking.bookingFee.toString(),
     clientNotes: booking.clientNotes,
@@ -82,6 +84,7 @@ export async function getBookingWithRelations(bookingId: string) {
       therapistProfile: {
         select: {
           displayName: true,
+          incallAddress: true,
           user: { select: { email: true } },
         },
       },

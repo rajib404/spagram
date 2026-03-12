@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
           therapistProfile: {
             select: {
               displayName: true,
+              incallAddress: true,
               userId: true,
               user: { select: { email: true } },
             },
@@ -76,6 +77,7 @@ export async function POST(req: NextRequest) {
           therapistProfile: {
             select: {
               displayName: true,
+              incallAddress: true,
               userId: true,
               user: { select: { email: true } },
             },
@@ -143,6 +145,7 @@ export async function POST(req: NextRequest) {
           therapistProfile: {
             select: {
               displayName: true,
+              incallAddress: true,
               user: { select: { email: true } },
             },
           },

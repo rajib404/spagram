@@ -16,12 +16,14 @@ interface BookingDetail {
   locationType: string;
   totalPrice: string;
   status: string;
+  outcallAddress: string | null;
   therapist: {
     displayName: string;
     slug: string;
     profilePhoto: string | null;
     city: string | null;
     state: string | null;
+    incallAddress: string | null;
   };
   therapistUserId: string;
 }
@@ -143,6 +145,17 @@ export default function UserBookingDetailPage({
                 {booking.duration}min &middot; {booking.locationType === "INCALL" ? "Incall" : "Outcall"}
               </span>
             </div>
+            {/* Address */}
+            {booking.locationType === "INCALL" && booking.therapist.incallAddress && (
+              <p className="mt-1.5 text-sm text-neutral-500">
+                <span className="font-medium text-neutral-600">Studio:</span> {booking.therapist.incallAddress}
+              </p>
+            )}
+            {booking.locationType === "OUTCALL" && booking.outcallAddress && (
+              <p className="mt-1.5 text-sm text-neutral-500">
+                <span className="font-medium text-neutral-600">Outcall:</span> {booking.outcallAddress}
+              </p>
+            )}
           </div>
           <div className="text-right flex-shrink-0">
             <p className="font-semibold text-neutral-900">${parseFloat(booking.totalPrice).toFixed(0)}</p>

@@ -20,6 +20,7 @@ interface BookingEmailData {
   serviceType: string;
   locationType: string;
   outcallAddress?: string | null;
+  incallAddress?: string | null;
   totalPrice: string;
   bookingFee: string;
   clientNotes?: string | null;
@@ -131,7 +132,7 @@ function bookingDetailsTable(data: BookingEmailData, opts?: { showFee?: boolean;
   const showNotes = opts?.showNotes ?? false;
 
   const locationValue = data.locationType === "INCALL"
-    ? "In-Studio"
+    ? `In-Studio${data.incallAddress ? " &mdash; " + escapeHtml(data.incallAddress) : ""}`
     : `Outcall${data.outcallAddress ? " &mdash; " + escapeHtml(data.outcallAddress) : ""}`;
 
   let rows = "";
@@ -390,7 +391,9 @@ export async function sendBookingPendingToClient(data: BookingEmailData) {
 
 export async function sendBookingAcceptedToClient(data: BookingEmailData) {
   const locationDetail = data.locationType === "INCALL"
-    ? `<p style="margin:0;font-size:13px;color:#166534;line-height:1.5;">&#127970;&nbsp; <strong>In-Studio:</strong> The therapist's studio address will be available in your booking details.</p>`
+    ? data.incallAddress
+      ? `<p style="margin:0;font-size:13px;color:#166534;line-height:1.5;">&#127970;&nbsp; <strong>Studio Address:</strong> ${escapeHtml(data.incallAddress)}</p>`
+      : `<p style="margin:0;font-size:13px;color:#166534;line-height:1.5;">&#127970;&nbsp; <strong>In-Studio:</strong> The therapist will share their studio address with you.</p>`
     : data.outcallAddress
       ? `<p style="margin:0;font-size:13px;color:#166534;line-height:1.5;">&#128205;&nbsp; <strong>Outcall Address:</strong> ${escapeHtml(data.outcallAddress)}</p>`
       : "";
