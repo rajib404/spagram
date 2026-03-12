@@ -3054,7 +3054,7 @@ const THERAPIST_RESPONSES = [
 ];
 
 async function main() {
-  console.log("Seeding database with 100 therapists...\n");
+  console.log(`Seeding database with ${THERAPIST_DATA.length} therapists...\n`);
 
   // Clean existing data
   await prisma.message.deleteMany();
