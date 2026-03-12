@@ -72,16 +72,23 @@ export async function POST(req: NextRequest) {
 
       // Handle Stripe based on booking status
       if (fresh.stripePaymentIntentId) {
-        if (fresh.status === "PENDING") {
-          await cancelPaymentIntent(
-            fresh.stripePaymentIntentId,
-            `cancel-${booking.id}`
-          );
-        } else if (fresh.status === "ACCEPTED") {
-          await refundPaymentIntent(
-            fresh.stripePaymentIntentId,
-            `cancel-refund-${booking.id}`
-          );
+        try {
+          if (fresh.status === "PENDING") {
+            await cancelPaymentIntent(
+              fresh.stripePaymentIntentId,
+              `cancel-${booking.id}`
+            );
+          } else if (fresh.status === "ACCEPTED") {
+            await refundPaymentIntent(
+              fresh.stripePaymentIntentId,
+              `cancel-refund-${booking.id}`
+            );
+          }
+        } catch (stripeErr) {
+          logger.error("Stripe cancel/refund failed (continuing with cancel)", {
+            paymentIntentId: fresh.stripePaymentIntentId,
+            error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
+          });
         }
       }
 

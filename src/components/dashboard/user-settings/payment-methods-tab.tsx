@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, FormEvent } from "react";
 import { toast } from "sonner";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { Loader2 } from "lucide-react";
+import { getStripeClient } from "@/lib/stripe-client";
 
 interface PaymentMethod {
   id: string;
@@ -24,10 +27,95 @@ function brandLabel(brand: string) {
   return brands[brand] ?? brand.charAt(0).toUpperCase() + brand.slice(1);
 }
 
+function AddCardForm({
+  clientSecret,
+  onSuccess,
+  onCancel,
+}: {
+  clientSecret: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) return;
+
+    setSaving(true);
+    setError("");
+
+    const { error: confirmError } = await stripe.confirmCardSetup(clientSecret, {
+      payment_method: { card: cardElement },
+    });
+
+    if (confirmError) {
+      setError(confirmError.message || "Failed to save card. Please try again.");
+      setSaving(false);
+      return;
+    }
+
+    toast.success("Payment method added");
+    onSuccess();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="rounded-lg border border-neutral-200 bg-white p-4 space-y-4">
+      <div className="rounded-md border border-neutral-200 p-3">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: "14px",
+                color: "#171717",
+                "::placeholder": { color: "#a3a3a3" },
+              },
+            },
+          }}
+        />
+      </div>
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={saving || !stripe}
+          className="btn-primary px-5 py-2 text-sm disabled:opacity-50"
+        >
+          {saving ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Saving...
+            </span>
+          ) : (
+            "Save Card"
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={saving}
+          className="px-5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-800 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function PaymentMethodsTab() {
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingCard, setAddingCard] = useState(false);
+  const [setupClientSecret, setSetupClientSecret] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [settingDefaultId, setSettingDefaultId] = useState<string | null>(null);
 
@@ -56,13 +144,7 @@ export function PaymentMethodsTab() {
       if (!res.ok) {
         throw new Error(data.error || "Failed to start setup");
       }
-
-      // The clientSecret would be used with @stripe/react-stripe-js
-      // to render a CardElement and confirm the SetupIntent.
-      // For now, show a placeholder message.
-      void data.clientSecret;
-      toast.info("Card setup initiated. Complete the setup in the payment form.");
-      await fetchMethods();
+      setSetupClientSecret(data.clientSecret);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to add payment method"
@@ -70,6 +152,11 @@ export function PaymentMethodsTab() {
     } finally {
       setAddingCard(false);
     }
+  }
+
+  function handleCardSaved() {
+    setSetupClientSecret(null);
+    fetchMethods();
   }
 
   async function handleRemove(paymentMethodId: string) {
@@ -192,13 +279,32 @@ export function PaymentMethodsTab() {
         </div>
       )}
 
-      <button
-        onClick={handleAddCard}
-        disabled={addingCard}
-        className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50"
-      >
-        {addingCard ? "Setting up..." : "Add Payment Method"}
-      </button>
+      {setupClientSecret ? (
+        <Elements
+          stripe={getStripeClient()}
+          options={{
+            clientSecret: setupClientSecret,
+            appearance: {
+              theme: "stripe",
+              variables: { borderRadius: "8px" },
+            },
+          }}
+        >
+          <AddCardForm
+            clientSecret={setupClientSecret}
+            onSuccess={handleCardSaved}
+            onCancel={() => setSetupClientSecret(null)}
+          />
+        </Elements>
+      ) : (
+        <button
+          onClick={handleAddCard}
+          disabled={addingCard}
+          className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50"
+        >
+          {addingCard ? "Setting up..." : "Add Payment Method"}
+        </button>
+      )}
     </div>
   );
 }

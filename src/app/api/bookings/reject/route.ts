@@ -114,10 +114,17 @@ export async function POST(req: NextRequest) {
 
       // Cancel the Stripe PaymentIntent (release the hold)
       if (fresh.stripePaymentIntentId) {
-        await cancelPaymentIntent(
-          fresh.stripePaymentIntentId,
-          `reject-${booking.id}`
-        );
+        try {
+          await cancelPaymentIntent(
+            fresh.stripePaymentIntentId,
+            `reject-${booking.id}`
+          );
+        } catch (stripeErr) {
+          logger.error("Stripe cancel failed (continuing with reject)", {
+            paymentIntentId: fresh.stripePaymentIntentId,
+            error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
+          });
+        }
       }
 
       return tx.booking.update({

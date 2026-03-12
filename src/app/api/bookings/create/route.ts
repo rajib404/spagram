@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     dayEnd.setHours(23, 59, 59, 999);
 
     // Use transaction to prevent race conditions
-    const booking = await db.$transaction(async (tx) => {
+    const { booking, clientSecret } = await db.$transaction(async (tx) => {
       // Check for conflicting bookings
       const conflicting = await tx.booking.findFirst({
         where: {
@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Create booking
-      return tx.booking.create({
+      const newBooking = await tx.booking.create({
         data: {
           bookingNumber,
           clientId: session.user.id,
@@ -235,6 +235,8 @@ export async function POST(req: NextRequest) {
           },
         },
       });
+
+      return { booking: newBooking, clientSecret: paymentIntent.client_secret };
     });
 
     // Send emails (non-blocking)
@@ -254,6 +256,7 @@ export async function POST(req: NextRequest) {
           bookingFee: booking.bookingFee.toString(),
           stripePaymentIntentId: booking.stripePaymentIntentId,
         },
+        clientSecret,
       },
       { status: 201 }
     );

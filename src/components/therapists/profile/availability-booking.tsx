@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   Calendar,
@@ -8,9 +8,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  CreditCard,
+  ShieldCheck,
 } from "lucide-react";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { cn } from "@/lib/utils";
+import { getStripeClient } from "@/lib/stripe-client";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DURATIONS = [
@@ -34,6 +38,78 @@ interface AvailabilityBookingProps {
   outcallAvailable: boolean;
   incallPricePerHour: number | null;
   outcallPricePerHour: number | null;
+}
+
+function CheckoutForm({ bookingId, bookingFee }: { bookingId: string; bookingFee: number }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setPaying(true);
+    setError("");
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      setError(submitError.message || "Please check your card details.");
+      setPaying(false);
+      return;
+    }
+
+    const { error: confirmError } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/user/bookings/${bookingId}?success=true`,
+      },
+    });
+
+    if (confirmError) {
+      setError(confirmError.message || "Payment failed. Please try again.");
+      setPaying(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
+        <CreditCard className="h-4 w-4 text-primary-500" />
+        Enter payment details
+      </div>
+
+      <div className="rounded-lg border border-neutral-200 bg-white p-4">
+        <PaymentElement />
+      </div>
+
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
+
+      <div className="flex items-center gap-2 text-xs text-neutral-500">
+        <ShieldCheck className="h-3.5 w-3.5" />
+        A hold of ${bookingFee.toFixed(2)} will be placed on your card. You will only be charged if the therapist accepts the booking.
+      </div>
+
+      <button
+        type="submit"
+        disabled={paying || !stripe || !elements}
+        className="btn-primary w-full py-3 text-base"
+      >
+        {paying ? (
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Processing...
+          </span>
+        ) : (
+          "Confirm & Pay"
+        )}
+      </button>
+    </form>
+  );
 }
 
 export function AvailabilityBooking({
@@ -66,6 +142,10 @@ export function AvailabilityBooking({
   const [outcallAddress, setOutcallAddress] = useState("");
   const [clientNotes, setClientNotes] = useState("");
   const [bookingLoading, setBookingLoading] = useState(false);
+
+  // Payment step state
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
   // Fetch weekly availability
   useEffect(() => {
@@ -168,9 +248,11 @@ export function AvailabilityBooking({
       }
 
       const data = await res.json();
-      router.push(`/user/bookings/${data.booking.id}?success=true`);
+      setBookingId(data.booking.id);
+      setClientSecret(data.clientSecret);
     } catch {
       alert("Something went wrong. Please try again.");
+    } finally {
       setBookingLoading(false);
     }
   }
@@ -304,7 +386,7 @@ export function AvailabilityBooking({
       </div>
 
       {/* Time slots */}
-      {selectedDate && (
+      {selectedDate && !clientSecret && (
         <div className="mt-4">
           <h3 className="flex items-center gap-2 text-sm font-medium text-neutral-700">
             <Clock className="h-4 w-4" />
@@ -347,7 +429,7 @@ export function AvailabilityBooking({
       )}
 
       {/* Booking form */}
-      {selectedSlot && (
+      {selectedSlot && !clientSecret && (
         <div className="mt-6 rounded-xl border border-primary-200 bg-primary-50/50 p-5">
           <h3 className="font-semibold text-neutral-900">Book this session</h3>
 
@@ -519,6 +601,56 @@ export function AvailabilityBooking({
                 "Book now"
               )}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment step */}
+      {clientSecret && bookingId && (
+        <div className="mt-6 rounded-xl border border-primary-200 bg-primary-50/50 p-5">
+          <h3 className="font-semibold text-neutral-900">Complete Payment</h3>
+          <p className="mt-1 text-sm text-neutral-600">
+            Your booking has been created. Please enter your card details to confirm.
+          </p>
+
+          {/* Price summary recap */}
+          <div className="mt-4 rounded-xl border border-neutral-200 bg-white p-4">
+            <div className="flex items-center justify-between text-sm text-neutral-600">
+              <span>
+                ${hourlyRate} x{" "}
+                {duration >= 60
+                  ? `${duration / 60} hr${duration > 60 ? "s" : ""}`
+                  : `${duration} min`}
+              </span>
+              <span>${totalPrice.toFixed(2)}</span>
+            </div>
+            <div className="mt-1.5 flex items-center justify-between text-sm text-neutral-600">
+              <span>Booking fee (10%)</span>
+              <span>${bookingFee.toFixed(2)}</span>
+            </div>
+            <div className="mt-2 border-t border-neutral-100 pt-2">
+              <div className="flex items-center justify-between font-semibold text-neutral-900">
+                <span>Total</span>
+                <span>${(totalPrice + bookingFee).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <Elements
+              stripe={getStripeClient()}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: "stripe",
+                  variables: {
+                    borderRadius: "8px",
+                  },
+                },
+              }}
+            >
+              <CheckoutForm bookingId={bookingId} bookingFee={bookingFee} />
+            </Elements>
           </div>
         </div>
       )}

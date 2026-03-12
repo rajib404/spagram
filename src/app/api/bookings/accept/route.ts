@@ -115,10 +115,17 @@ export async function POST(req: NextRequest) {
 
       // Capture Stripe PaymentIntent (idempotent)
       if (fresh.stripePaymentIntentId) {
-        await capturePaymentIntent(
-          fresh.stripePaymentIntentId,
-          `accept-${booking.id}`
-        );
+        try {
+          await capturePaymentIntent(
+            fresh.stripePaymentIntentId,
+            `accept-${booking.id}`
+          );
+        } catch (stripeErr) {
+          logger.error("Stripe capture failed (continuing with accept)", {
+            paymentIntentId: fresh.stripePaymentIntentId,
+            error: stripeErr instanceof Error ? stripeErr.message : String(stripeErr),
+          });
+        }
       }
 
       // Update booking status and clear token
