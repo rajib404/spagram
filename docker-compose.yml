@@ -21,15 +21,15 @@ services:
     container_name: sparina-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: sparina
+      POSTGRES_USER: spagram
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: sparina
+      POSTGRES_DB: spagram
     volumes:
-      - sparina-pgdata:/var/lib/postgresql/data
+      - spagram-pgdata:/var/lib/postgresql/data
     networks:
       - sparina-internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sparina -d sparina"]
+      test: ["CMD-SHELL", "pg_isready -U spagram -d spagram"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -41,7 +41,7 @@ services:
       target: builder
     container_name: sparina-migrate
     environment:
-      DATABASE_URL: "postgresql://sparina:${DB_PASSWORD}@sparina-db:5432/sparina?schema=public"
+      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@sparina-db:5432/spagram?schema=public"
     command: npx prisma migrate deploy
     depends_on:
       sparina-db:
@@ -58,7 +58,7 @@ services:
       target: builder
     container_name: sparina-seed
     environment:
-      DATABASE_URL: "postgresql://sparina:${DB_PASSWORD}@sparina-db:5432/sparina?schema=public"
+      DATABASE_URL: "postgresql://spagram:${DB_PASSWORD}@sparina-db:5432/spagram?schema=public"
     command: npx prisma db seed
     depends_on:
       sparina-db:
@@ -69,7 +69,7 @@ services:
       - tools
 
 volumes:
-  sparina-pgdata:
+  spagram-pgdata:
     driver: local
   sparina-uploads:
     driver: local
