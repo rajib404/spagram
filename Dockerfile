@@ -11,10 +11,8 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 RUN npx prisma generate
-RUN npm run build
+RUN set -a && . ./.env.production && set +a && npm run build
 
 # Stage 3: Production runner
 FROM node:18-alpine AS runner
