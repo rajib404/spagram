@@ -35,6 +35,9 @@ export async function GET(req: NextRequest) {
       case "unverified":
         where.isVerified = false;
         break;
+      case "active":
+        where.isActive = true;
+        break;
       case "inactive":
         where.isActive = false;
         break;
@@ -58,6 +61,7 @@ export async function GET(req: NextRequest) {
           rating: true,
           reviewCount: true,
           massageTypes: true,
+          galleryPhotos: true,
           createdAt: true,
           user: {
             select: { id: true, email: true, firstName: true, lastName: true },
@@ -81,6 +85,7 @@ export async function GET(req: NextRequest) {
         rating: t.rating,
         reviewCount: t.reviewCount,
         massageTypes: t.massageTypes,
+        galleryPhotos: t.galleryPhotos,
         createdAt: t.createdAt.toISOString(),
         userId: t.user.id,
         userEmail: t.user.email,
