@@ -27,6 +27,19 @@ async function uploadFiles(files: File[]): Promise<string[]> {
   return (await res.json()).urls;
 }
 
+async function fetchFromUrls(urls: string[]): Promise<{ urls: string[]; errors: string[] }> {
+  const res = await fetch("/api/admin/fetch-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ urls }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || `Fetch failed (${res.status})`);
+  }
+  return res.json();
+}
+
 async function savePhotos(
   id: string,
   data: { profilePhoto?: string | null; galleryPhotos?: string[] }
@@ -336,12 +349,16 @@ function InlinePhotoEditor({
   onUpdate: (updates: Partial<Therapist>) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [profileUrl, setProfileUrl] = useState("");
+  const [galleryUrl, setGalleryUrl] = useState("");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const profileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const galleryPhotos = therapist.galleryPhotos || [];
+  const busy = uploading || fetching;
 
   async function handleProfileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -372,6 +389,59 @@ function InlinePhotoEditor({
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to remove");
     }
+  }
+
+  async function handleProfileFetchUrl() {
+    const url = profileUrl.trim();
+    if (!url) return;
+    setFetching(true);
+    try {
+      const result = await fetchFromUrls([url]);
+      if (result.errors.length > 0) {
+        toast.error(result.errors[0]);
+      }
+      if (result.urls.length > 0) {
+        await savePhotos(therapist.id, { profilePhoto: result.urls[0] });
+        onUpdate({ profilePhoto: result.urls[0] });
+        setProfileUrl("");
+        toast.success(`Profile photo fetched for ${therapist.displayName}`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Fetch failed");
+    }
+    setFetching(false);
+  }
+
+  async function handleGalleryFetchUrl() {
+    const rawUrls = galleryUrl
+      .split(/[\n,]+/)
+      .map((u) => u.trim())
+      .filter(Boolean);
+    if (rawUrls.length === 0) return;
+
+    const remaining = 8 - galleryPhotos.length;
+    if (rawUrls.length > remaining) {
+      toast.error(`Can only add ${remaining} more photo${remaining !== 1 ? "s" : ""}`);
+      return;
+    }
+
+    setFetching(true);
+    try {
+      const result = await fetchFromUrls(rawUrls);
+      if (result.errors.length > 0) {
+        result.errors.forEach((e) => toast.error(e));
+      }
+      if (result.urls.length > 0) {
+        const updated = [...galleryPhotos, ...result.urls];
+        await savePhotos(therapist.id, { galleryPhotos: updated });
+        onUpdate({ galleryPhotos: updated });
+        setGalleryUrl("");
+        toast.success(`${result.urls.length} photo${result.urls.length !== 1 ? "s" : ""} fetched`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Fetch failed");
+    }
+    setFetching(false);
   }
 
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -478,11 +548,30 @@ function InlinePhotoEditor({
           />
           <button
             onClick={() => profileInputRef.current?.click()}
-            disabled={uploading}
+            disabled={busy}
             className="mt-2 w-28 text-center px-2 py-1.5 text-xs font-medium border border-neutral-300 rounded-lg hover:bg-white disabled:opacity-50 transition-colors"
           >
-            {uploading ? "Uploading..." : "Upload"}
+            {busy ? "Working..." : "Upload"}
           </button>
+          <div className="mt-2 w-28">
+            <input
+              type="text"
+              placeholder="Paste URL..."
+              value={profileUrl}
+              onChange={(e) => setProfileUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleProfileFetchUrl()}
+              className="w-full px-2 py-1.5 text-[10px] border border-neutral-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-400"
+            />
+            {profileUrl.trim() && (
+              <button
+                onClick={handleProfileFetchUrl}
+                disabled={busy}
+                className="mt-1 w-full text-center px-2 py-1 text-[10px] font-medium bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 transition-colors"
+              >
+                {fetching ? "Fetching..." : "Fetch"}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Gallery photos */}
@@ -532,7 +621,7 @@ function InlinePhotoEditor({
             {galleryPhotos.length < 8 && (
               <button
                 onClick={() => galleryInputRef.current?.click()}
-                disabled={uploading}
+                disabled={busy}
                 className="aspect-[4/5] rounded-lg border-2 border-dashed border-neutral-300 hover:border-primary-400 hover:bg-primary-50/50 transition-colors flex flex-col items-center justify-center text-neutral-400 hover:text-primary-500 disabled:opacity-50"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -550,6 +639,23 @@ function InlinePhotoEditor({
             className="hidden"
             onChange={handleGalleryUpload}
           />
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              placeholder="Paste image URL(s) — separate multiple with commas or new lines..."
+              value={galleryUrl}
+              onChange={(e) => setGalleryUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleGalleryFetchUrl()}
+              className="flex-1 px-2.5 py-1.5 text-xs border border-neutral-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-400"
+            />
+            <button
+              onClick={handleGalleryFetchUrl}
+              disabled={busy || !galleryUrl.trim()}
+              className="px-3 py-1.5 text-xs font-medium bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 transition-colors whitespace-nowrap"
+            >
+              {fetching ? "Fetching..." : "Fetch URL"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
