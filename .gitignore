@@ -14,6 +14,9 @@
 # production
 /build
 
+# uploaded content (persisted via Docker volume in production)
+/uploads
+
 # misc
 .DS_Store
 *.pem
